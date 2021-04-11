@@ -16,7 +16,7 @@ C_EL_CUT_IN = float(input('Insert C_EL_CUT_IN: '))
 LOOK_AHEAD = int(input('Insert LOOK AHEAD (as number of time steps): '))
 NOISE = 0
 
-df = pd.read_excel(path)
+df = pd.read_excel(path, engine='openpyxl')
 
 f = open(uniquify(f'{path.split(".")[0]}.txt'), 'w')
 f.write(f'file={path} T_ON_IS={T_ON_IS} C_EL_CUT_IN={C_EL_CUT_IN} NOISE={NOISE} LOOK_AHEAD={LOOK_AHEAD}\n')
