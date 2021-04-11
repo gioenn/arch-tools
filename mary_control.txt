@@ -1,0 +1,80 @@
+# A (tank heating)
+
+A_UP = PARAMETER 
+A_UPPER = dT_AB = PARAMETER
+A_LOWER = A_UP-B_LOW 
+
+5) T1_BOT < A_UP-A_UPPER ---> START HEATING
+6) T1_BOT > A_UP-A_LOWER  ---> STOP HEATING
+
+# B (tank cooling)
+
+B_LOW = PARAMETER
+B_UPPER = dT_AB = PARAMETER
+B_LOWER = A_UP-B_LOW 
+
+8) T1_BOT > B_LOW + B_UPPER --> START_COOLNG
+9) T1_BOT < B_LOW + B_LOWER --> STOP_COOLING
+
+# C (pump heating)
+
+C_UP = V_MIX_TSP - dt_CD 
+C_UPPER = C_UP - (Tmin_SFC + dband_CD)
+C_LOWER = 0
+dt_CD = PARAMETER
+dband_CD = PARAMETER (deadband for hystereses C and D)
+V_MIX_TSP = PARAMETER
+Tmin_SFC = 15
+
+11) T_MIX_OUT < C_UP-C_UPPER ---> START HEATING
+12) T_MIX_OUT > C_UP-C_LOWER ---> STOP HEATING
+
+# D (pump cooling)
+
+D_LOW = V_MIX_TSP + dt_CD
+D_UPPER = Tmax_SFC-dband_CD-D_LOW
+D_LOWER = 0
+dt_CD = PARAMETER
+V_MIX_TSP = PARAMETER
+Tmax_SFC = 35
+
+14) T_MIX_OUT > D_LOW + D_UPPER --> START_COOLNG
+15) T_MIX_OUT < D_LOW + D_LOWER --> STOP_COOLING
+
+-------
+
+CONSTANTS: 
+dT_HX = 3
+Tmin_SFC = 15
+Tmax_SFC = 35
+C_LOWER = 0 (to be removed)
+D_LOWER = 0 (to be removed)
+
+PARAMETERS: 
+A_UP
+B_LOW
+dT_AB
+V_MIX_TSP 
+dt_CD
+dband_CD
+
+CONSTRAINTS:
+C0: dT_AB > 0 (makes tank modes distiguished without up and downs)
+C1: A_UP >= Tmin_SFC+dT_HX+dT_AB (derived lower bound)
+C2: B_LOW <= Tmax_SFC-dT_HX-dT_AB (derived upper bound)
+C3: A_UP - B_LOW < dT_AB 
+C4: dt_CD > 0 (makes pump modes distiguished without up and downs)
+C5: dband_CD >= 0 (delta from Tmin_SFC and Tmax_SFC)
+C6: V_MIX_TSP - dt_CD > Tmin_SFC + dband_CD (derived lower bound)
+C7: V_MIX_TSP + dt_CD < Tmax_SFC - dband_CD (derived upper bound)
+
+
+CONSTRAINTS (detailed):
+C0: dT_AB > 0
+C1: A_UP - A_UPPER = A_UP - dT_AB >= Tmin_SFC+dT_HX 
+C2: B_LOW + B_UPPER = B_LOW + dT_AB <= Tmax_SFC-dT_HX 
+C3: A_UP - A_UPPER < A_UP - A_LOWER => A_UPPER > A_LOWER => dT_AB > A_UP-B_LOW => B_LOW + dT_AB > A_UP
+C4: dt_CD > 0
+C5: dt_CD > 0 
+C6: C_UP-C_LOWER = V_MIX_TSP - dt_CD > Tmin_SFC + dband_CD
+C7: D_LOW + D_LOWER = V_MIX_TSP + dt_CD < Tmax_SFC - dband_CD
