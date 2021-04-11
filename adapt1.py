@@ -28,7 +28,7 @@ for index, row in df.iterrows():
     PRD_ST_ON = 0
     for pIndex in range(index+1, index+(LOOK_AHEAD-T_ON_IS)+2):
         print(df.iloc[pIndex:pIndex+T_ON_IS])
-        cond1 = [pRow[5] > C_EL_CUT_IN for pRow in df.iloc[pIndex:pIndex+T_ON_IS].itertuples()]
+        cond1 = [pRow[5] > C_EL_CUT_IN and pRow[5] > pRow[2] for pRow in df.iloc[pIndex:pIndex+T_ON_IS].itertuples()]
         if len(cond1) == T_ON_IS and all(cond1):
             PRD_ST_ON = 1
             break
